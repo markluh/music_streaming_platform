@@ -1,0 +1,70 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+    <div class="user-profile">
+        {% if user_profile.userprofile.profile_picture %}
+            <img src="{{ user_profile.userprofile.profile_picture.url }}" alt="{{ user_profile.username }}'s Profile Picture" class="profile-pic-large">
+        {% else %}
+            <img src="{% static 'images/default_profile_pic.png' %}" alt="Default profile picture" class="profile-pic-large">
+        {% endif %}
+
+        <h2>{{ user_profile.username }}
+            {% if user_profile.userprofile.is_verified %}
+                <span class="verified-badge">✓</span>
+            {% endif %}
+            {% if user_profile.userprofile.is_online %}
+                <span class="online-indicator"></span>
+            {% endif %}
+        </h2>
+        <p>Joined: {{ user_profile.date_joined|date:"F j, Y" }}</p>
+
+        <div class="profile-stats">
+            <div class="stats-item">
+                <span class="stats-number">{{ follower_count }}</span>
+                <span class="stats-label">Followers</span>
+            </div>
+            <div class="stats-item">
+                <span class="stats-number">{{ following_count }}</span>
+                <span class="stats-label">Following</span>
+            </div>
+        </div>
+
+        {% if user == user_profile %}
+            <a href="{% url 'edit_profile' username=user_profile.username %}">Edit Profile</a>
+        {% else %}
+            {% if request.user.is_authenticated %}
+                <form action="{% url 'follow_user' username=user_profile.username %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">
+                        {% if is_following %}Unfollow{% else %}Follow{% endif %}
+                    </button>
+                </form>
+            {% endif %}
+        {% endif %}
+
+        <h3>Uploaded Music</h3>
+        {% if uploaded_music %}
+            <div class="music-grid">
+                {% for music in uploaded_music %}
+                    <div class="music-item">
+                        <div class="uploader-info">
+                            <a href="{% url 'music_detail' pk=music.pk %}">
+                                <span>{{ music.title }} by {{ music.artist }}</span>
+                            </a>
+                        </div>
+                        <div class="music-body">
+                            <audio controls>
+                                <source src="{{ music.file_path.url }}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>{{ user_profile.username }} has not uploaded any music yet.</p>
+        {% endif %}
+    </div>
+{% endblock %}

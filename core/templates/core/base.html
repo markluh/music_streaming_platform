@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Music Streaming Platform{% endblock %}</title>
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'core/style.css' %}?v=1.1">
+</head>
+<body>
+    <header>
+        <h1><a href="{% url 'homepage' %}">Music Platform</a></h1>
+        <nav>
+            <ul>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'upload_music' %}"><b>Upload Music</b></a></li>
+                    <li>
+                        <b>Logged in as: </b>
+                        <a href="{% url 'user_profile' username=user.username %}" class="user-profile-link">
+                            {% if user.userprofile.profile_picture %}
+                                <img src="{{ user.userprofile.profile_picture.url }}" alt="{{ user.username }}'s profile picture" class="profile-pic">
+                            {% else %}
+                                <img src="{% static 'images/default_profile_pic.png' %}" alt="Default profile picture" class="profile-pic">
+                            {% endif %}
+                            <span>{{ user.username }}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'notifications' %}" class="notification-bell">
+                            🔔
+                            {% if unread_notifications_count > 0 %}
+                                <span class="notification-badge">{{ unread_notifications_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li>
+                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="border:none; background:none; color:inherit; cursor:pointer; font:inherit; padding:0;">Logout</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}"><b>Login</b></a></li>
+                    <li><a href="{% url 'signup' %}"><b>Sign Up</b></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <button id="theme-toggle">☀️</button>
+    </header>
+
+    {% block content %}
+    {% endblock %}
+
+    <!-- <div class="common-player-bar">
+        <audio id="common-player" controls></audio>
+        <div id="player-info">
+            <span id="player-title">No song playing</span>
+        </div>
+    </div> -->
+
+    <footer>
+        <p>&copy; 2025 Music Streaming Platform</p>
+    </footer>
+
+    {% comment %} This script handles your player functionality {% endcomment %}
+    <script src="{% static 'js/main.js' %}"></script>
+
+    {% comment %} This script handles your dark mode toggle functionality {% endcomment %}
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme) {
+            body.classList.add(currentTheme);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', '');
+            } else {
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+            }
+        });
+    </script>
+</body>
+</html>

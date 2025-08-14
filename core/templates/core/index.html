@@ -1,0 +1,129 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}BlackStrem - Homepage{% endblock %}
+
+{% block content %}
+    <div class="three-column-layout">
+        <div class="sidebar left-sidebar">
+            <div class="search-bar">
+                <form action="{% url 'search_results' %}" method="get">
+                    <input type="text" name="q" placeholder="Search for music or users...">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            
+            <h3>Followed Users</h3>
+            <ul>
+                {% for user in followed_users %}
+                    <li>
+                        <a href="{% url 'user_profile' username=user.username %}">
+                            <img src="{% if user.userprofile.profile_picture %}{{ user.userprofile.profile_picture.url }}{% else %}{% static 'images/default_profile_pic.png' %}{% endif %}" class="profile-pic-small" alt="{{ user.username }}">
+                            {{ user.username }}
+                            {% if user.userprofile.is_verified %}
+                                <span class="verified-badge" title="Verified User">✔</span>
+                            {% endif %}
+                            {% if user.userprofile.is_online %}
+                                <span class="online-indicator"></span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% empty %}
+                    <li>No followed users yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="main-content">
+            <h1>Latest Music</h1>
+            <div class="music-grid">
+                {% for music in all_music %}
+                    <div class="music-item">
+                        <div class="uploader-info">
+                            <a href="{% url 'user_profile' username=music.uploaded_by.username %}">
+                                <img src="{% if music.uploaded_by.userprofile.profile_picture %}{{ music.uploaded_by.userprofile.profile_picture.url }}{% else %}{% static 'images/default_profile_pic.png' %}{% endif %}" alt="{{ music.uploaded_by.username }}'s profile picture" class="profile-pic-small">
+                            </a>
+                            <a href="{% url 'user_profile' username=music.uploaded_by.username %}">
+                                <span>{{ music.uploaded_by.username }}</span>
+                                {% if music.uploaded_by.userprofile.is_verified %}
+                                    <span class="verified-badge">✔</span>
+                                {% endif %}
+                                {% if music.uploaded_by.userprofile.is_online %}
+                                    <span class="online-indicator"></span>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="music-body">
+                            <span class="music-title">{{ music.title }} by {{ music.artist }}</span>
+                            <a href="#" class="play-btn" data-src="{{ music.file_path.url }}" data-title="{{ music.title }}" data-artist="{{ music.artist }}">
+                                ▶️ Play
+                            </a>
+                        </div>
+                        
+                        <div class="music-feedback">
+                            <div class="like-dislike-container">
+                                <a href="{% url 'like_music' music.pk %}" class="like-btn {% if music.is_liked %}active{% endif %}">
+                                    👍 <span class="count">{{ music.likes_count }}</span>
+                                </a>
+                                <a href="{% url 'dislike_music' music.pk %}" class="dislike-btn {% if music.is_disliked %}active{% endif %}">
+                                    👎 <span class="count">{{ music.dislikes_count }}</span>
+                                </a>
+                            </div>
+
+                            <div class="comment-section">
+                                <h4>Comments ({{ music.comments_count }})</h4>
+                                {% for comment in music.comments.all %}
+                                    <div class="comment-item">
+                                        <strong>{{ comment.user.username }}</strong>: {{ comment.content }}
+                                    </div>
+                                {% empty %}
+                                    <p>No comments yet. Be the first to comment!</p>
+                                {% endfor %}
+
+                                {% if user.is_authenticated %}
+                                    <form action="{% url 'add_comment' music.pk %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="text" name="comment_text" placeholder="Add a comment..." required>
+                                        <button type="submit">Post</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="sidebar right-sidebar">
+            <h3>Suggested Users</h3>
+            <ul>
+                {% for user in suggested_users %}
+                    <li>
+                        <a href="{% url 'user_profile' username=user.username %}">
+                            <img src="{% if user.userprofile.profile_picture %}{{ user.userprofile.profile_picture.url }}{% else %}{% static 'images/default_profile_pic.png' %}{% endif %}" class="profile-pic-small" alt="{{ user.username }}">
+                            {{ user.username }}
+                            {% if user.userprofile.is_verified %}
+                                <span class="verified-badge" title="Verified User">✔</span>
+                            {% endif %}
+                            {% if user.userprofile.is_online %}
+                                <span class="online-indicator"></span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% empty %}
+                    <li>No suggested users for now.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="common-player-container">
+        <div class="player-info">
+            <span id="player-title">No song playing</span>
+        </div>
+        <audio id="common-player" controls></audio>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/main.js' %}"></script>
+{% endblock %}

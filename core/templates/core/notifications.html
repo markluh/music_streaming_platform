@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+{% block title %}BlackStream - Notifications{% endblock %}
+
+{% block content %}
+    <h2>Your Notifications</h2>
+    <form action="{% url 'mark_notifications_read' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Mark all as read</button>
+    </form>
+    <ul>
+    {% for notification in notifications %}
+        <li class="{% if not notification.is_read %}unread{% endif %}">
+            {% if notification.notification_type == 'new_follower' %}
+                {{ notification.sender.username }} started following you.
+            {% elif notification.notification_type == 'comment' %}
+                {{ notification.sender.username }} commented on a song: {{ notification.music.title }}.
+            {% elif notification.notification_type == 'like' %}
+                {{ notification.sender.username }} liked your song: {{ notification.music.title }}.
+            {% elif notification.notification_type == 'new_music' %}
+                {{ notification.sender.username }} added a new song: {{ notification.music.title }}.
+                
+            {% endif %}
+            
+            <br>
+            <small>{{ notification.created_at }}</small>
+        </li>
+    {% empty %}
+        <li>You have no new notifications.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

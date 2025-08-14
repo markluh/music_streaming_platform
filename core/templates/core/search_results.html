@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+    <h1>Search Results for "{{ query }}"</h1>
+
+    <h2>Music</h2>
+    {% if music_results %}
+        <ul>
+            {% for music in music_results %}
+                <li>{{ music.title }} by {{ music.artist }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No music found matching your search.</p>
+    {% endif %}
+
+    <h2>Users</h2>
+    {% if user_results %}
+        <ul>
+            {% for user in user_results %}
+                <li><a href="{% url 'user_profile' username=user.username %}">{{ user.username }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No users found matching your search.</p>
+    {% endif %}
+{% endblock %}
