@@ -6,84 +6,103 @@
     <title>{% block title %}Music Streaming Platform{% endblock %}</title>
     {% load static %}
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
-    <link rel="stylesheet" href="{% static 'core/style.css' %}?v=1.1">
+    <link rel="stylesheet" href="{% static 'core/style.css' %}?v=1.2">
 </head>
 <body>
     <header>
-        <h1><a href="{% url 'homepage' %}">Music Platform</a></h1>
-        <nav>
-            <ul>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'upload_music' %}"><b>Upload Music</b></a></li>
-                    <li>
-                        <b>Logged in as: </b>
-                        <a href="{% url 'user_profile' username=user.username %}" class="user-profile-link">
-                            {% if user.userprofile.profile_picture %}
-                                <img src="{{ user.userprofile.profile_picture.url }}" alt="{{ user.username }}'s profile picture" class="profile-pic">
-                            {% else %}
-                                <img src="{% static 'images/default_profile_pic.png' %}" alt="Default profile picture" class="profile-pic">
-                            {% endif %}
-                            <span>{{ user.username }}</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'notifications' %}" class="notification-bell">
-                            🔔
-                            {% if unread_notifications_count > 0 %}
-                                <span class="notification-badge">{{ unread_notifications_count }}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li>
-                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" style="border:none; background:none; color:inherit; cursor:pointer; font:inherit; padding:0;">Logout</button>
-                        </form>
-                    </li>
-                {% else %}
-                    <li><a href="{% url 'login' %}"><b>Login</b></a></li>
-                    <li><a href="{% url 'signup' %}"><b>Sign Up</b></a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        <button id="theme-toggle">☀️</button>
+        <h1><a href="{% url 'homepage' %}" class="ajax-link">BlackStrem.com</a></h1>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+                <div class="logged-in-info">
+                    <a href="{% url 'user_profile' username=user.username %}" class="user-profile-link ajax-link">
+                        {% if user.userprofile.profile_picture %}
+                            <img src="{{ user.userprofile.profile_picture.url }}" alt="{{ user.username }}'s profile picture" class="profile-pic">
+                        {% else %}
+                            <img src="{% static 'images/default_profile_pic.png' %}" alt="Default profile picture" class="profile-pic">
+                        {% endif %}
+                        <span>{{ user.username }}</span>
+                    </a>
+                </div>
+                <a href="{% url 'logout' %}" class="nav-btn ajax-link">Logout</a>
+                <a href="{% url 'notifications' %}" class="nav-btn ajax-link">
+                    <span class="notification-bell">
+                        🔔
+                        {% if unread_notifications_count > 0 %}
+                            <span class="notification-badge">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </span>
+                </a>
+                <a href="{% url 'upload_music' %}" class="nav-btn ajax-link">Upload Music</a>
+                <button id="theme-toggle" class="nav-btn">☀️</button>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-btn ajax-link">Login</a>
+                <a href="{% url 'signup' %}" class="nav-btn ajax-link">Sign Up</a>
+                <button id="theme-toggle" class="nav-btn">☀️</button>
+            {% endif %}
+        </div>
     </header>
 
-    {% block content %}
-    {% endblock %}
+    <!-- Main container -->
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Global Player -->
+    <div class="common-player-container {% if request.resolver_match.url_name in 'login signup' %}hidden-on-login{% endif %}">
+        <div class="player-card-container">
+            <div class="uploader-avatar-wrapper">
+                {% if last_played_state.uploader_avatar %}
+                    <img id="uploader-avatar" src="{{ last_played_state.uploader_avatar }}" alt="Uploader's profile picture" class="uploader-avatar">
+                {% else %}
+                    <img id="uploader-avatar" src="{% static 'images/default_profile_pic.png' %}" alt="Uploader" class="uploader-avatar">
+                {% endif %}
+            </div>
 
-    <!-- <div class="common-player-bar">
-        <audio id="common-player" controls></audio>
-        <div id="player-info">
-            <span id="player-title">No song playing</span>
+            <div class="player-info">
+                <span id="player-title">No song playing</span>
+            </div>
+            
+            <div class="player-media-section">
+                <audio id="common-player" controls></audio>
+                <div class="player-controls-container">
+                    <button id="prev-btn" class="player-btn player-nav-btn">⏮</button>
+                    <button id="rewind-btn" class="player-btn player-nav-btn">-10s</button>
+                    <button id="forward-btn" class="player-btn player-nav-btn">+10s</button>
+                    <button id="next-btn" class="player-btn player-nav-btn">⏭</button>
+                    <button id="loop-btn" data-loop-mode="no-loop" class="player-btn">No Loop</button>
+                </div>
+            </div>
         </div>
-    </div> -->
+    </div>
 
     <footer>
-        <p>&copy; 2025 Music Streaming Platform</p>
+        <p>&copy; 2025 BlackStrem.com</p>
+        <div class="footer-bars">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
     </footer>
+    
+    <script id="saved-player-state" type="application/json">
+        {{ last_played_state|safe }}
+    </script>
+    
+    <form style="display:none;" id="csrf-form">{% csrf_token %}</form>
 
-    {% comment %} This script handles your player functionality {% endcomment %}
+    <div id="user-info" data-authenticated="{{ request.user.is_authenticated|yesno:'True,False' }}"></div>
+    
     <script src="{% static 'js/main.js' %}"></script>
-
-    {% comment %} This script handles your dark mode toggle functionality {% endcomment %}
     <script>
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
         
         const currentTheme = localStorage.getItem('theme');
-        if (currentTheme) {
-            body.classList.add(currentTheme);
-        }
+        if (currentTheme) body.classList.add(currentTheme);
 
         themeToggle.addEventListener('click', () => {
-            if (body.classList.contains('dark-mode')) {
-                body.classList.remove('dark-mode');
-                localStorage.setItem('theme', '');
-            } else {
-                body.classList.add('dark-mode');
-                localStorage.setItem('theme', 'dark-mode');
-            }
+            body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark-mode' : '');
         });
     </script>
 </body>

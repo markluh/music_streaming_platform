@@ -1,12 +1,64 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
 {% block title %}Edit Profile{% endblock %}
 
 {% block content %}
-    <div class="form-container">
+    <style>
+        .edit-profile-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .edit-profile-container .profile-pic-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+
+        .edit-profile-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .edit-profile-container form p {
+            text-align: left;
+        }
+
+        .edit-profile-container input[type="file"],
+        .edit-profile-container input[type="text"],
+        .edit-profile-container textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+    </style>
+
+    <div class="edit-profile-container">
         <h2>Edit Profile for {{ user_to_edit.username }}</h2>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
+            
+            {% if profile_form.instance.profile_picture %}
+                <img src="{{ profile_form.instance.profile_picture.url }}" 
+                     alt="{{ user_to_edit.username }}'s profile picture" 
+                     class="profile-pic-preview">
+            {% else %}
+                <img src="{% static 'images/default_profile_pic.png' %}" 
+                     alt="Default profile picture" 
+                     class="profile-pic-preview">
+            {% endif %}
+
+            {{ profile_form.as_p }}
+
             <button type="submit">Save Changes</button>
         </form>
     </div>

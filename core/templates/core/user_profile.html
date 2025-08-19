@@ -18,7 +18,12 @@
                 <span class="online-indicator"></span>
             {% endif %}
         </h2>
+        
         <p>Joined: {{ user_profile.date_joined|date:"F j, Y" }}</p>
+
+        {% if user_profile.userprofile.bio %}
+            <p>{{ user_profile.userprofile.bio }}</p>
+        {% endif %}
 
         <div class="profile-stats">
             <div class="stats-item">
@@ -32,7 +37,7 @@
         </div>
 
         {% if user == user_profile %}
-            <a href="{% url 'edit_profile' username=user_profile.username %}">Edit Profile</a>
+            <a href="{% url 'edit_profile' user.username %}" class="ajax-link">Edit Profile</a>
         {% else %}
             {% if request.user.is_authenticated %}
                 <form action="{% url 'follow_user' username=user_profile.username %}" method="post">

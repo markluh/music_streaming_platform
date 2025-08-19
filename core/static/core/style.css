@@ -1,60 +1,19 @@
-
-body {
-    font-family: Arial, sans-serif;
+html, body {
+    height: 100%;
     margin: 0;
-    cursor: pointer;
     padding: 0;
+    font-family: Arial, sans-serif;
     line-height: 1.6;
     transition: background-color 0.3s ease, color 0.3s ease;
     background-color: var(--bg-color-light);
     color: var(--text-color-light);
 }
 
-.search-bar {
+body {
     display: flex;
-    margin-bottom: 20px;
-    padding: 10px;
-    border-radius: 8px;
-    background-color: #333;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    flex-direction: column;
+    overflow: hidden;
 }
-
-
-.search-bar input[type="text"] {
-    flex-grow: 1; 
-    padding: 8px 12px;
-    border: 1px solid #555;
-    border-radius: 5px;
-    background-color: #444;
-    color: #eee;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.3s;
-}
-
-
-.search-bar input[type="text"]:focus {
-    border-color: #007bff; 
-}
-
-
-.search-bar button {
-    padding: 8px 15px;
-    margin-left: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-
-
-.search-bar button:hover {
-    background-color: #0056b3;
-}
-
 
 :root {
     --bg-color-light: #f4f4f4;
@@ -65,7 +24,6 @@ body {
     --border-color-light: #eee;
     --button-bg-light: #007bff;
     --button-text-light: #fff;
-
     --bg-color-dark: #121212;
     --text-color-dark: #e0e0e0;
     --link-color-dark: #66b3ff;
@@ -74,8 +32,8 @@ body {
     --border-color-dark: #444;
     --button-bg-dark: #66b3ff;
     --button-text-dark: #1e1e1e;
+    --accent-color: #007bff;
 }
-
 
 body.dark-mode {
     background-color: var(--bg-color-dark);
@@ -126,7 +84,6 @@ body.dark-mode .form-container input {
     color: var(--text-color-dark);
 }
 
-/* --- Header and Navigation --- */
 header {
     background-color: #333;
     color: #fff;
@@ -135,6 +92,7 @@ header {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+    flex-shrink: 0;
 }
 
 header h1 {
@@ -147,34 +105,55 @@ header h1 a {
     text-decoration: none;
 }
 
-header nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
+.nav-links {
     display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
     gap: 15px;
 }
 
-header nav a {
-    color: #fff;
+.nav-btn {
+    padding: 8px 12px;
+    border-radius: 5px;
     text-decoration: none;
-}
-
-#theme-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.5em;
+    transition: background-color 0.3s ease;
+    border: 2px solid var(--accent-color);
+    background-color: transparent;
     color: #fff;
 }
 
-.nav-left ul,
-.nav-right ul {
+.nav-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#theme-toggle.nav-btn {
+    order: 0;
+    font-size: 1.5em;
+}
+
+.upload-music-btn {
+    order: 1;
+}
+
+.notifications-btn {
+    order: 2;
+}
+
+.logout-btn {
+    order: 3;
+}
+
+.login-btn,
+.signup-btn {
+    order: 1;
+}
+
+.logged-in-info {
+    order: 4;
     display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 20px;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
 }
 
 .notification-bell {
@@ -210,41 +189,40 @@ header nav a {
     border: 2px solid #fff;
 }
 
-/* --- Main Layouts --- */
-.three-column-layout {
+.page-container {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-columns: 250px 1fr 250px;
     gap: 20px;
     padding: 20px;
+    flex: 1;
+    overflow: hidden;
 }
 
-.two-column-layout {
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    gap: 20px;
+.main-content,
+.left-sidebar,
+.right-sidebar {
+    height: 100%;
+    overflow-y: auto;
     padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .main-content {
-    padding: 20px;
+    grid-column: 2 / 3;
     background-color: var(--card-bg-light);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .left-sidebar {
     grid-column: 1 / 2;
+    background-color: var(--sidebar-bg-light);
+    border-radius: 8px;
 }
 
 .right-sidebar {
     grid-column: 3 / 4;
-}
-
-.sidebar {
-    padding: 20px;
     background-color: var(--sidebar-bg-light);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar h3 {
@@ -276,7 +254,6 @@ header nav a {
     text-decoration: underline;
 }
 
-/* --- Music and Uploader Info --- */
 .main-content ul {
     list-style: none;
     padding: 0;
@@ -330,7 +307,6 @@ body.dark-mode .music-item {
     width: 100%;
 }
 
-/* --- Profile and Avatar --- */
 .profile-pic-small {
     width: 40px;
     height: 40px;
@@ -355,7 +331,6 @@ body.dark-mode .music-item {
     padding: 20px;
 }
 
-/* Stats for followers/following on the profile page */
 .profile-stats {
     display: flex;
     gap: 30px;
@@ -377,7 +352,6 @@ body.dark-mode .music-item {
     color: #777;
 }
 
-/* --- CSS-Generated Default Avatars --- */
 .default-avatar,
 .profile-pic-small.default-avatar,
 .profile-pic-large.default-avatar {
@@ -413,20 +387,18 @@ body.dark-mode .music-item {
     background-color: #fff;
 }
 
-/* Unique Avatar Color Classes */
 .default-avatar-blue { background-color: #007bff; }
 .default-avatar-green { background-color: #28a745; }
 .default-avatar-red { background-color: #dc3545; }
 .default-avatar-purple { background-color: #6f42c1; }
 .default-avatar-orange { background-color: #fd7e14; }
 
-
 footer {
     text-align: center;
     padding: 20px 0;
     background-color: #333;
     color: #fff;
-    margin-top: 20px;
+    flex-shrink: 0;
 }
 
 .verified-badge {
@@ -444,7 +416,6 @@ footer {
     vertical-align: middle;
 }
 
-/* Online Indicator */
 .online-indicator {
     display: inline-block;
     width: 10px;
@@ -454,29 +425,75 @@ footer {
     margin-left: 5px;
 }
 
-/* Common Player Styles */
 .common-player-container {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #333;
+    background-color: transparent;
     color: #fff;
     padding: 10px 20px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
     z-index: 1000;
+    flex-shrink: 0;
 }
 
-.common-player-container .player-info {
+.player-card-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #333;
+    padding: 15px 30px;
+    border-radius: 12px;
+    border: 2px solid #555;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 900px;
+}
+
+.uploader-avatar-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.uploader-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.player-info {
     flex-grow: 1;
     margin-right: 20px;
 }
 
-.common-player-container #common-player {
-    width: 300px;
+.player-media-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.player-media-section audio {
+    max-width: 300px;
+    width: 100%;
+}
+
+.player-controls-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .music-body .play-btn {
@@ -495,24 +512,22 @@ footer {
     background-color: #e9ecef;
 }
 
-/* Dark mode styles for the common player */
 body.dark-mode .common-player-container {
-    background-color: #1e1e1e;
+    background-color: transparent;
     color: var(--text-color-dark);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: none;
 }
 
-body.dark-mode .music-body .play-btn {
-    color: var(--link-color-dark);
-    border-color: var(--border-color-dark);
-    background-color: #333;
+body.dark-mode .player-card-container {
+    background-color: #1e1e1e;
+    border-color: #444;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
 }
 
 body.dark-mode .music-body .play-btn:hover {
     background-color: #444;
 }
 
-/* Search Form and Results */
 .search-container {
     padding: 20px;
 }
@@ -543,7 +558,10 @@ body.dark-mode .music-body .play-btn:hover {
     padding: 15px;
     transition: background-color 0.3s ease;
 }
-
+.form-container {
+    height: 400px; /* Adjust this value as needed */
+    overflow-y: auto;
+}
 .search-container li:hover {
     background-color: #f1f1f1;
 }
@@ -561,7 +579,6 @@ body.dark-mode .music-body .play-btn:hover {
     padding: 10px 0;
 }
 
-/* Form Container (Login, Signup, etc.) */
 .form-container {
     display: flex;
     flex-direction: column;
@@ -605,7 +622,6 @@ body.dark-mode .music-body .play-btn:hover {
     cursor: pointer;
 }
 
-/* Upload Page */
 .upload-container {
     display: flex;
     flex-direction: column;
@@ -639,10 +655,75 @@ body.dark-mode .music-body .play-btn:hover {
     color: var(--text-color-light);
 }
 
-/* Responsive Grid for Music */
+.comment-section form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-section input[name="comment_text"] {
+    width: 100%;
+
+    padding: 10px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color-light);
+}
+
+body:not(.dark-mode) .comment-section input[name="comment_text"] {
+    background-color: white;
+    color: black;
+}
+
+body.dark-mode .comment-section input[name="comment_text"] {
+    background-color: black;
+    color: white;
+}
+
+.comment-section button[type="submit"] {
+    display: block;
+    margin: 0 auto;
+    border-radius: 8px;
+}
+
+.comment-item {
+    background-color: var(--card-bg-light);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.comment-item {
+    color: black;
+}
+
+body.dark-mode .comment-item {
+    color: black;
+}
+
+.comment-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: #777;
+}
+
+.comment-author {
+    font-weight: bold;
+    color: var(--text-color-light);
+}
+
+.comment-date {
+    font-style: italic;
+}
+
 @media (max-width: 1200px) {
-    .three-column-layout {
-        grid-template-columns: 1fr 2fr;
+    .page-container {
+        grid-template-columns: 250px 1fr;
     }
 
     .right-sidebar {
@@ -655,7 +736,7 @@ body.dark-mode .music-body .play-btn:hover {
 }
 
 @media (max-width: 768px) {
-    .three-column-layout {
+    .page-container {
         grid-template-columns: 1fr;
     }
     
@@ -674,7 +755,92 @@ body.dark-mode .music-body .play-btn:hover {
     }
 }
 
-.main-content,
-.three-column-layout {
-    padding-bottom: 120px; 
+.search-bar button,
+.form-container button,
+.upload-form button {
+    padding: 8px 15px;
+    border-radius: 5px;
+    background-color: var(--accent-color);
+    color: var(--button-text-light);
+    border: 2px solid var(--accent-color);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.player-btn {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: 2px solid var(--accent-color);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 6px 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.player-btn:hover {
+    background-color: #0056b3;
+}
+
+.nav-btn {
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    border: 2px solid var(--accent-color);
+    background-color: transparent;
+    color: #fff;
+}
+
+.nav-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.player-media-section {
+    text-align: center;
+}
+
+.search-bar {
+    display: flex;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar input[type="text"] {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #444;
+    color: #eee;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-bar input[type="text"]:focus {
+    border-color: #007bff;
+}
+
+.search-bar button {
+    margin-left: 10px;
+}
+
+.hidden-on-login {
+    display: none;
+}
+/* === Independent scrolling fix === */
+.left-sidebar,
+.right-sidebar {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.main-content {
+  overflow-y: auto;
+  max-height: 100vh;
 }

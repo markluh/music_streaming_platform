@@ -4,7 +4,7 @@
 {% block content %}
     <h2>{{ music.title }}</h2>
     <p><strong>Artist:</strong> {{ music.artist }}</p>
-    <p><strong>Uploader:</strong> <a href="{% url 'user_profile' username=music.uploader.username %}">{{ music.uploader.username }}</a></p>
+    <p><strong>Uploader:</strong> <a href="{% url 'user_profile' username=music.uploaded_by.username %}">{{ music.uploaded_by.username }}</a></p>
     <audio controls>
         <source src="{{ music.file_path.url }}" type="audio/mpeg">
         Your browser does not support the audio element.

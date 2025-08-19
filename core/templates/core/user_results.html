@@ -1,0 +1,27 @@
+{% load static %}
+
+{% if user_results %}
+    <div class="user-list-grid">
+    {% for user_profile in user_results %}
+        {% if user_profile.user %}
+            <div class="user-item">
+                <div class="user-avatar-wrapper">
+                    <img src="{% if user_profile.profile_picture %}{{ user_profile.profile_picture.url }}{% else %}{% static 'images/default_profile_pic.png' %}{% endif %}" 
+                         alt="{{ user_profile.user.username }}'s profile picture" class="user-avatar">
+                </div>
+                <div class="user-details">
+                    <h3><a href="{% url 'user_profile' username=user_profile.user.username %}" class="ajax-link">{{ user_profile.user.username }}</a></h3>
+                    {% if user_profile.is_verified %}
+                        <span class="verified-badge">✔ Verified</span>
+                    {% endif %}
+                    {% if user_profile.is_online %}
+                        <span class="online-indicator"></span> Online
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+{% else %}
+    <p>No users found for your search query.</p>
+{% endif %}

@@ -1,29 +1,106 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}Search Results{% endblock %}
 
 {% block content %}
-    <h1>Search Results for "{{ query }}"</h1>
+    <style>
+        .profile-pic-small {
+            width: 30px; /* Adjust as needed */
+            height: 30px; /* Adjust as needed */
+            border-radius: 50%; /* Make it circular if desired */
+            object-fit: cover; /* Prevent image distortion */
+            margin-right: 5px;
+            vertical-align: middle; /* Align with the text */
+        }
 
-    <h2>Music</h2>
-    {% if music_results %}
-        <ul>
-            {% for music in music_results %}
-                <li>{{ music.title }} by {{ music.artist }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No music found matching your search.</p>
-    {% endif %}
+        .user-avatar {
+            width: 50px; /* Adjust as needed */
+            height: 50px; /* Adjust as needed */
+            border-radius: 50%; /* Make it circular if desired */
+            object-fit: cover; /* Prevent image distortion */
+            margin-right: 10px;
+            vertical-align: middle; /* Align with the username */
+        }
 
-    <h2>Users</h2>
-    {% if user_results %}
-        <ul>
-            {% for user in user_results %}
-                <li><a href="{% url 'user_profile' username=user.username %}">{{ user.username }}</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No users found matching your search.</p>
-    {% endif %}
+        .user-avatar-wrapper {
+            display: inline-block; /* Allows setting width and height */
+        }
+
+        .uploader-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+    </style>
+
+    <h1 class="page-title">Search Results for "{{ query|default_if_none:"None" }}"</h1>
+
+    <div class="search-results-container">
+        
+        <section class="music-results">
+            <h2>Music</h2>
+            {% if music_results %}
+                <div class="music-grid">
+                {% for music in music_results %}
+                    <div class="music-item">
+                        <div class="uploader-info">
+                            <a href="{% url 'user_profile' username=music.uploaded_by.username %}" class="ajax-link">
+                                <img src="{% if music.uploaded_by.userprofile.profile_picture %}{{ music.uploaded_by.userprofile.profile_picture.url }}{% else %}{% static 'images/default_profile_pic.png' %}{% endif %}" 
+                                     class="profile-pic-small" 
+                                     alt="{{ music.uploaded_by.username }}'s profile picture">
+                            </a>
+                            <a href="{% url 'user_profile' username=music.uploaded_by.username %}" class="ajax-link">
+                                <span>{{ music.uploaded_by.username }}</span>
+                            </a>
+                        </div>
+        
+                        <div class="music-body">
+                            <span class="music-title">{{ music.title }} by {{ music.artist }}</span>
+                            <a href="#" class="play-btn" 
+                               data-src="{{ music.file_path.url }}"
+                               data-title="{{ music.title }}" 
+                               data-artist="{{ music.artist }}"
+                               data-uploader-pic="{% if music.uploaded_by.userprofile.profile_picture %}{{ music.uploaded_by.userprofile.profile_picture.url }}{% else %}{% static 'images/default_profile_pic.png' %}{% endif %}">
+                                ▶️ Play
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <p>No music found for your search query.</p>
+            {% endif %}
+        </section>
+
+        <section class="user-results">
+            <h2>Users</h2>
+            {% if user_results %}
+                <div class="user-list-grid">
+                {% for user_profile in user_results %}
+                    {% if user_profile.user %}
+                        <div class="user-item">
+                            <div class="user-avatar-wrapper">
+                                <img src="{% if user_profile.profile_picture %}{{ user_profile.profile_picture.url }}{% else %}{% static 'images/default_profile_pic.png' %}{% endif %}" 
+                                     alt="{{ user_profile.user.username }}'s profile picture" class="user-avatar">
+                            </div>
+                            <div class="user-details">
+                                <h3><a href="{% url 'user_profile' username=user_profile.user.username %}" class="ajax-link">{{ user_profile.user.username }}</a></h3>
+                                {% if user_profile.is_verified %}
+                                    <span class="verified-badge">✔ Verified</span>
+                                {% endif %}
+                                {% if user_profile.is_online %}
+                                    <span class="online-indicator"></span> Online
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            {% else %}
+                <p>No users found for your search query.</p>
+            {% endif %}
+        </section>
+
+    </div>
 {% endblock %}

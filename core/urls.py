@@ -7,7 +7,7 @@ urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('signup/', views.signup, name='signup'),
     path('logout/', views.user_logout, name='logout'),
-    path('search/', views.search_results, name='search_results'),
+    
     # Profile and Follow System
     path('profile/<str:username>/', views.user_profile, name='user_profile'),
     path('follow/<str:username>/', views.follow_user, name='follow_user'),
@@ -22,8 +22,14 @@ urlpatterns = [
     path('music/<int:pk>/dislike/', views.dislike_music, name='dislike_music'),
     path('music/<int:pk>/comment/', views.add_comment, name='add_comment'),
     path('login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='login'),
+
     # Notifications and Search
     path('notifications/', views.notifications, name='notifications'),
     path('notifications/read/', views.mark_notifications_read, name='mark_notifications_read'),
     path('search/', views.search, name='search'),
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='accounts_login'),
+
+
+    # API Endpoints
+    path('api/save_player_state/', views.save_player_state_api, name='save_player_state_api'),
 ]

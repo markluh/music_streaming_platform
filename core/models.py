@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import timedelta
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # The UserProfile model is a OneToOne relationship with Django's built-in User model.
 class UserProfile(models.Model):
@@ -9,6 +11,15 @@ class UserProfile(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     is_verified = models.BooleanField(default=False)
     last_activity = models.DateTimeField(null=True, blank=True)
+
+    # Added fields to save the last played song and position
+    last_played_song = models.ForeignKey(
+        'Music', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
+    playback_position = models.FloatField(default=0.0)
 
     def is_online(self):
         """
@@ -62,10 +73,12 @@ class Comment(models.Model):
     def __str__(self):
         return f'Comment by {self.user.username} on {self.music.title}'
 
-
-
-from django.db import models
-from .models import User 
+# This signal ensures a UserProfile is created for every new User.
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+    instance.userprofile.save()
 
 class Notification(models.Model):
     
@@ -74,8 +87,6 @@ class Notification(models.Model):
     COMMENT = 'comment'
     NEW_MUSIC = 'new_music'
 
-
-    
     NOTIFICATION_TYPES = (
         (NEW_FOLLOWER, 'New Follower'),
         (LIKE, 'Music Like'),
@@ -83,13 +94,10 @@ class Notification(models.Model):
         (NEW_MUSIC, 'New Music Upload'),
     )
 
-    
     recipient = models.ForeignKey(User, related_name='notifications', on_delete=models.CASCADE)
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
     
-    
     notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
-    
     
     message = models.TextField()
     is_read = models.BooleanField(default=False)

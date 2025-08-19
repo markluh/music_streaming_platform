@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core.apps.CoreConfig',  # Add your app here
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -53,8 +54,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'music_platform_project.urls'
 
-# music_platform_project/settings.py
-# music_platform_project/settings.py
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -66,7 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'core.context_processors.notifications_and_following', # <-- UPDATE THIS LINE
+                'core.context_processors.global_context', # <-- UPDATED TO GLOBAL CONTEXT
             ],
         },
     },
@@ -83,7 +82,7 @@ DATABASES = {
         'NAME': 'music_platform_db',
         'USER': 'root',
         'PASSWORD': 'markluh@2025',
-        'HOST': '127.0.0.1',  # Or the IP of your MySQL server
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }
@@ -113,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
@@ -124,27 +123,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files (uploaded user content)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-#AUTH_USER_MODEL = 'core.User'
-import os
 
-# A URL prefix that will be used to serve media files
-MEDIA_URL = '/media/'
-
-# The absolute path to the directory where uploaded files will be stored
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_REDIRECT_URL = 'homepage'
-
-# music_platform_project/settings.py
-# ... other settings
-#AUTH_USER_MODEL = 'core.User'
-# MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-# LOGIN_REDIRECT_URL = 'homepage'
-
-# Redirect to the login page after logout
 LOGOUT_REDIRECT_URL = 'login'

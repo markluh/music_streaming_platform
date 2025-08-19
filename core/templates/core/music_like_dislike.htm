@@ -1,0 +1,10 @@
+<div class="like-dislike-container">
+    <a href="{% url 'like_music' music.pk %}" class="ajax-like-dislike {% if user_vote == 'like' %}active{% endif %}">
+        <i class="fas fa-thumbs-up"></i>
+    </a>
+    <span id="likes-count-{{ music.pk }}">{{ music.likes.count }}</span>
+    <a href="{% url 'dislike_music' music.pk %}" class="ajax-like-dislike {% if user_vote == 'dislike' %}active{% endif %}">
+        <i class="fas fa-thumbs-down"></i>
+    </a>
+    <span id="dislikes-count-{{ music.pk }}">{{ music.dislikes.count }}</span>
+</div>
